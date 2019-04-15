@@ -1,34 +1,61 @@
-% Antonio Romeu PAulo Pinheiro, 92427
+% ----- Antonio Romeu Paulo Pinheiro, 92427 ----- %
 
-% Funcoes Auxiliares
+% ----- Predicados Auxiliares ----- %
 
-comprimento([], 0).
-comprimento([_ | R], C + 1) :-
-    compriento(R, C_aux),
-    C is C_aux + 1.
+conta_ocur(_, [], 0).
+conta_ocur(P, [P | R], N) :-
+    number(P),
+    conta_ocur(P, R, N1),
+    !, N is N1 + 1.
+conta_ocur(P, [_ | R], N) :-
+    conta_ocur(P, R, N).
 
-conta_el(_, [], 0).
-conta_el(X, [X | T], N) :-
-    !,
-    conta_el(X, T, N1),
-    N is N1 + 1.
-conta_el(X, [_ | T], N) :-
-    conta_el(X, T, N).
+conta_variaveis(L, Cont) :-
+    include(var, L, L_vars),
+    length(L_vars, Cont).
 
-verifica_3_elementos(Triplo) :-
-    conta_el(1, Triplo, N),
-    N =\= 3,
-    N =\= 0,
-    true.
+preenche_triplo([X, Y, Z], Res) :-
+    conta_variaveis([X, Y, Z], Num_Vars),
+    (Num_Vars == 1, preenche_1([X, Y, Z], Res)
+        ;
+    Num_Vars == 0, (!, conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0
+                        ;
+                    !, conta_ocur(0, [X, Y, Z], N), N =\= 3, N > 0), Res = [X, Y, Z]
+        ;
+    Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N == 3, false
+                        ;
+                    conta_ocur(0, [X, Y, Z], N), N == 3, false)).
 
-% Funcoes Principais
+preenche_1([X, Y, Z], Res) :-
+    (var(X), NX is 2 - Z - Y, (NX == 2, Res = [1, Y, Z]
+                                    ;
+                                Res = [NX, Y, Z])
+        ;
+    var(Y), NY is 2 - Z - X, (NY == 2, Res = [X, 1, Z]
+                                    ;
+                                Res = [X, NY, Z])
+        ;
+    var(Z), NZ is 2 - X - Y, (NZ == 2, Res = [X, Y, 1]
+                                    ;
+                                Res = [X, Y, NZ])).
+
+% ----- Predicados Principais ----- %
 
 aplica_R1_triplo(Triplo, N_Triplo) :-
-    comprimento(Triplo, C),
-    C == 3,
-    verifica_3_elementos(Triplo).
+    preenche_triplo(Triplo, N_Triplo).
 
-aplica_R1_triplo(Triplo, N_Triplo) :-
-    comprimento(Triplo, C),
-    C == 2,
-    verifica_2_elementos(Triplo).
+% ----- Outros Predicados ----- %
+
+preenche_lista_aux([X, Y, Z], Res) :-
+    preenche_triplo([X, Y, Z], Res).
+
+preenche_lista_aux([X, Y, Z | R], Res) :-
+    preenche_triplo([X, Y, Z], [NX, NY, NZ]),
+    preenche_lista_aux([NY, NZ | R], Res_Temp),
+    Res = [NX | Res_Temp].
+
+preenche_lista(L, Res) :-
+    preenche_lista_aux(L, Res_Temp),
+    (L == Res_Temp, Res = Res_Temp
+        ;
+     preenche_lista(Res_Temp, Res)).
