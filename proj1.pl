@@ -81,3 +81,6 @@ aplica_R2_fila(Fila, N_Fila) :-
     (verifica_se_sao_metade(Fila, 0), adiciona_elementos(1, Fila, [], N_Fila);
     verifica_se_sao_metade(Fila, 1), adiciona_elementos(0, Fila, [], N_Fila);
     Fila = N_Fila).
+
+aplica_R1_R2_fila(Fila, N_Fila) :-
+    aplica_R1_fila(Fila, N_Fila0) -> aplica_R2_fila(N_Fila0, N_Fila); false.
