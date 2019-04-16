@@ -17,10 +17,12 @@ conta_variaveis(L, Cont) :-
 preenche_triplo([X, Y, Z], Res) :-
     conta_variaveis([X, Y, Z], Num_Vars),
     (Num_Vars == 1, preenche_1([X, Y, Z], Res);
-    Num_Vars == 0, (!, conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0;
-                    !, conta_ocur(0, [X, Y, Z], N), N =\= 3, N > 0), Res = [X, Y, Z];
+    Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0;
+                    conta_ocur(0, [X, Y, Z], N), N =\= 3, N > 0),
+                    Res = [X, Y, Z];
     Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N == 3, false;
-                    conta_ocur(0, [X, Y, Z], N), N == 3, false)).
+                    conta_ocur(0, [X, Y, Z], N), N == 3, false);
+    Num_Vars == 2, Res = [X, Y, Z]).
 
 preenche_1([X, Y, Z], Res) :-
     (var(X), NX is 2 - Z - Y, (NX == 2, Res = [1, Y, Z];
@@ -33,13 +35,6 @@ preenche_1([X, Y, Z], Res) :-
                                 NZ == 1, Res = [X, Y, Z];
                                 NZ == 0, Res = [X, Y, NZ])).
 
-% ----- Predicados Principais ----- %
-
-aplica_R1_triplo(Triplo, N_Triplo) :-
-    preenche_triplo(Triplo, N_Triplo).
-
-% ----- Outros Predicados ----- %
-
 preenche_lista_aux([X, Y, Z], Res) :-
     preenche_triplo([X, Y, Z], Res).
 
@@ -50,6 +45,18 @@ preenche_lista_aux([X, Y, Z | R], Res) :-
 
 preenche_lista(L, Res) :-
     preenche_lista_aux(L, Res_Temp),
-    (L == Res_Temp, Res = Res_Temp
-        ;
+    (L == Res_Temp, Res = Res_Temp;
      preenche_lista(Res_Temp, Res)).
+
+% ----- Predicados Principais ----- %
+
+aplica_R1_triplo(Triplo, N_Triplo) :-
+    preenche_triplo(Triplo, N_Triplo).
+
+aplica_R1_fila_aux(Fila, N_Fila) :-
+    preenche_lista_aux(Fila, N_Fila).
+
+aplica_R1_fila(Fila, N_Fila) :-
+    preenche_lista(Fila, N_Fila).
+
+% ----- Outros Predicados ----- %
