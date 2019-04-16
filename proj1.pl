@@ -16,28 +16,22 @@ conta_variaveis(L, Cont) :-
 
 preenche_triplo([X, Y, Z], Res) :-
     conta_variaveis([X, Y, Z], Num_Vars),
-    (Num_Vars == 1, preenche_1([X, Y, Z], Res)
-        ;
-    Num_Vars == 0, (!, conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0
-                        ;
-                    !, conta_ocur(0, [X, Y, Z], N), N =\= 3, N > 0), Res = [X, Y, Z]
-        ;
-    Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N == 3, false
-                        ;
+    (Num_Vars == 1, preenche_1([X, Y, Z], Res);
+    Num_Vars == 0, (!, conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0;
+                    !, conta_ocur(0, [X, Y, Z], N), N =\= 3, N > 0), Res = [X, Y, Z];
+    Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N == 3, false;
                     conta_ocur(0, [X, Y, Z], N), N == 3, false)).
 
 preenche_1([X, Y, Z], Res) :-
-    (var(X), NX is 2 - Z - Y, (NX == 2, Res = [1, Y, Z]
-                                    ;
-                                Res = [NX, Y, Z])
-        ;
-    var(Y), NY is 2 - Z - X, (NY == 2, Res = [X, 1, Z]
-                                    ;
-                                Res = [X, NY, Z])
-        ;
-    var(Z), NZ is 2 - X - Y, (NZ == 2, Res = [X, Y, 1]
-                                    ;
-                                Res = [X, Y, NZ])).
+    (var(X), NX is 2 - Z - Y, (NX == 2, Res = [1, Y, Z];
+                                NX == 1, Res = [X, Y, Z];
+                                NX == 0, Res = [NX, Y, Z]);
+    var(Y), NY is 2 - Z - X, (NY == 2, Res = [X, 1, Z];
+                                NY == 1, Res = [X, Y, Z];
+                                NY == 0, Res = [X, NY, Z]);
+    var(Z), NZ is 2 - X - Y, (NZ == 2, Res = [X, Y, 1];
+                                NZ == 1, Res = [X, Y, Z];
+                                NZ == 0, Res = [X, Y, NZ])).
 
 % ----- Predicados Principais ----- %
 
