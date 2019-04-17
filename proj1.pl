@@ -92,10 +92,10 @@ transpose_1st_col([], [], []).
 transpose_1st_col([[H|T]|Rows], [H|Hs], [T|Ts]) :-
     transpose_1st_col(Rows, Hs, Ts).
 
-aplica_R1_R2_colunas(L, N_Puz, N_PuzAux) :-
+aplica_R1_R2_colunas(L, N_Puz, N_Puz_Final) :-
     transpose(L, L_Transposta),
     aplica_R1_R2_linhas(L_Transposta, N_Puz, N_PuzAux),
-    transpose(N_PuzAux, N_Puz).
+    transpose(N_PuzAux, N_Puz_Final).
 
 % ----- Predicados Principais ----- %
 
@@ -118,12 +118,11 @@ aplica_R1_R2_fila(Fila, N_Fila) :-
     aplica_R1_fila(Fila, N_Fila0) -> aplica_R2_fila(N_Fila0, N_Fila); false.
 
 aplica_R1_R2_puzzle(Puz, N_Puz) :-
-    aplica_R1_R2_linhas(Puz, [], N_Puz0),
-    aplica_R1_R2_colunas(N_Puz0, [], N_Puz).
+    aplica_R1_R2_linhas(Puz, [], N_Puz0) -> aplica_R1_R2_colunas(N_Puz0, [], N_Puz); false.
 
 inicializa(Puz, N_Puz) :-
     aplica_R1_R2_puzzle(Puz, N_Puz).
 
 % ----- Predicados Teste ----- %
 
-% [[0,_,_,1],[0,_,_,1],[1,_,_,_],[1,0,_,_]]
+%[[_, _, 0, _, _, 1],[_, _, _, _, _, 1],[_, _, _, _, _, _],[_, _, _, _, 0, 0],[_, 1, _, _, _, _],[0, _, 0, _, _, _]]
