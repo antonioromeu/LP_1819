@@ -1,6 +1,7 @@
 % ----- Antonio Romeu Paulo Pinheiro, 92427 ----- %
 
 :- use_module(library(lists)).
+:- use_module(library(clpfd)).
 
 % ----- Predicados Auxiliares ----- %
 
@@ -72,8 +73,7 @@ escreve_Puzzle(Puz) :-
 escreve_Linha([]) :- nl, !.
 
 escreve_Linha([P | R]) :-
-    (var(P) -> write('- ')
-            ;
+    (var(P) -> write('- ');
      write(P), write(' ')),
      escreve_Linha(R).
 
@@ -83,19 +83,18 @@ aplica_R1_R2_linhas([P | R], N_Puz, N_PuzAux) :-
     append(N_Puz, [N_L], N_Puz1),
     aplica_R1_R2_linhas(R, N_Puz1, N_PuzAux).
 
-transpose([[]|_], []).
-transpose(Matrix, [Row|Rows]) :-
-    transpose_1st_col(Matrix, Row, RestMatrix),
-    transpose(RestMatrix, Rows).
-
-transpose_1st_col([], [], []).
-transpose_1st_col([[H|T]|Rows], [H|Hs], [T|Ts]) :-
-    transpose_1st_col(Rows, Hs, Ts).
+mat_transposta(Mat, Transp) :-
+    transpose(Mat, Transp).
 
 aplica_R1_R2_colunas(L, N_Puz, N_Puz_Final) :-
-    transpose(L, L_Transposta),
+    mat_transposta(L, L_Transposta),
     aplica_R1_R2_linhas(L_Transposta, N_Puz, N_PuzAux),
-    transpose(N_PuzAux, N_Puz_Final).
+    mat_transposta(N_PuzAux, N_Puz_Final).
+
+resolve_inspecciona(Puz, Novo) :-
+	aplica_R1_R2_puzzle(Puz, N_Puz),
+	(Puz = N_Puz -> Novo = N_Puz;
+	resolve_inspecciona(N_Puz, Novo)).
 
 % ----- Predicados Principais ----- %
 
@@ -121,8 +120,10 @@ aplica_R1_R2_puzzle(Puz, N_Puz) :-
     aplica_R1_R2_linhas(Puz, [], N_Puz0) -> aplica_R1_R2_colunas(N_Puz0, [], N_Puz); false.
 
 inicializa(Puz, N_Puz) :-
-    aplica_R1_R2_puzzle(Puz, N_Puz).
+    resolve_inspecciona(Puz, N_Puz0) -> resolve_inspecciona(N_Puz0, N_Puz); false.
 
-% ----- Predicados Teste ----- %
+verifica_R3(Puz) :-
+    
 
-%[[_, _, 0, _, _, 1],[_, _, _, _, _, 1],[_, _, _, _, _, _],[_, _, _, _, 0, 0],[_, 1, _, _, _, _],[0, _, 0, _, _, _]]
+%[[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
+%[[0,_,_,1],[0,_,_,1],[1,_,_,_],[1,0,_,_]]
