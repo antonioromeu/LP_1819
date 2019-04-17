@@ -1,5 +1,7 @@
 % ----- Antonio Romeu Paulo Pinheiro, 92427 ----- %
 
+% ----- Bibliotecas ----- %
+
 :- use_module(library(lists)).
 :- use_module(library(clpfd)).
 
@@ -44,7 +46,6 @@ preenche_1([X, Y, Z], Res) :-
 
 preenche_lista_aux([X, Y, Z], Res) :-
     preenche_triplo([X, Y, Z], Res).
-
 preenche_lista_aux([X, Y, Z | R], Res) :-
     preenche_triplo([X, Y, Z], [NX, NY, NZ]),
     preenche_lista_aux([NY, NZ | R], Res_Temp),
@@ -69,9 +70,7 @@ adiciona_elementos(El, [P | L], N_L, N_L1) :-
 
 escreve_Puzzle(Puz) :-
     maplist(escreve_Linha, Puz).
-
 escreve_Linha([]) :- nl, !.
-
 escreve_Linha([P | R]) :-
     (var(P) -> write('- ');
      write(P), write(' ')),
@@ -91,10 +90,21 @@ aplica_R1_R2_colunas(L, N_Puz, N_Puz_Final) :-
     aplica_R1_R2_linhas(L_Transposta, N_Puz, N_PuzAux),
     mat_transposta(N_PuzAux, N_Puz_Final).
 
-resolve_inspecciona(Puz, Novo) :-
+resolve_inicializa(Puz, Novo) :-
 	aplica_R1_R2_puzzle(Puz, N_Puz),
 	(Puz = N_Puz -> Novo = N_Puz;
-	resolve_inspecciona(N_Puz, Novo)).
+	resolve_inicializa(N_Puz, Novo)).
+
+compara_sublistas([]).
+compara_sublistas([L_Aux | R1]) :-
+    compara_sublistas_aux(L_Aux, R1),
+    compara_sublistas(R1).
+
+compara_sublistas_aux(_, []).
+compara_sublistas_aux(L_Aux, [P | R]) :-
+    (conta_variaveis(L_Aux, V), V \== 0, compara_sublistas_aux(L_Aux, R);
+    conta_variaveis(L_Aux, V), V == 0, L_Aux \== P, compara_sublistas_aux(L_Aux, R);
+    conta_variaveis(L_Aux, V), V == 0, L_Aux == P, false).
 
 % ----- Predicados Principais ----- %
 
@@ -120,10 +130,12 @@ aplica_R1_R2_puzzle(Puz, N_Puz) :-
     aplica_R1_R2_linhas(Puz, [], N_Puz0) -> aplica_R1_R2_colunas(N_Puz0, [], N_Puz); false.
 
 inicializa(Puz, N_Puz) :-
-    resolve_inspecciona(Puz, N_Puz0) -> resolve_inspecciona(N_Puz0, N_Puz); false.
+    resolve_inicializa(Puz, N_Puz0) -> resolve_inicializa(N_Puz0, N_Puz); false.
 
 verifica_R3(Puz) :-
-    
+    compara_sublistas(Puz).
 
 %[[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
 %[[0,_,_,1],[0,_,_,1],[1,_,_,_],[1,0,_,_]]
+%[[0,1,0,1],[1,_,_,_],[0,_,_,1],[1,0,_,_]]
+%[[0,1,0,1],[0,1,0,1],[1,_,_,_],[1,0,_,_]]
