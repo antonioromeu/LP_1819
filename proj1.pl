@@ -23,6 +23,9 @@ conta_variaveis(L, Cont) :-
     include(var, L, L_vars),
     length(L_vars, Cont).
 
+incr(X, X1) :-
+    X1 is X+1.
+
 preenche_triplo([X, Y, Z], Res) :-
     conta_variaveis([X, Y, Z], Num_Vars),
     (Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0;
@@ -96,6 +99,29 @@ compara_sublistas_aux(L_Aux, [P | R]) :-
     conta_variaveis(L_Aux, V), V == 0, L_Aux \== P, compara_sublistas_aux(L_Aux, R);
     conta_variaveis(L_Aux, V), V == 0, L_Aux == P, false).
 
+primeira_pos_livre(Mat, Pos) :-
+    mat_ref(Mat, Pos, El), var(El), !.
+
+devolve_linha([P | _], (L, _), P, L).
+devolve_linha([_ | R], (L, C), Linha, Cont) :-
+    incr(Cont, N_Cont), devolve_linha(R, (L, C), Linha, N_Cont).
+
+devolve_coluna(Mat, (L, C), Coluna, Cont) :-
+    mat_transposta(Mat, N_Mat),
+    devolve_coluna_aux(N_Mat, (L, C), Coluna, Cont).
+
+devolve_coluna_aux([P | _], (_, C), P, C).
+devolve_coluna_aux([_ | R], (L, C), Coluna, Cont) :-
+    incr(Cont, N_Cont), devolve_coluna_aux(R, (L, C), Coluna, N_Cont).
+
+propaga_posicoes_aux([(L, C) | _], Puz, N_Puz) :-
+    devolve_linha(Puz, (L, C), Linha, 1), aplica_R1_R2_fila(Linha, N_Linha), mat_muda_linha(Puz, L, N_Linha, N_Puz0),
+    devolve_coluna(N_Puz0, (L, C), Coluna, 1), aplica_R1_R2_fila(Coluna, N_Coluna), mat_muda_coluna(N_Puz0, C, N_Coluna, N_Puz),
+    escreve_Puzzle(N_Puz).
+
+posicoes_relacionadas(Mat, Pos, Lst) :-
+    
+
 % ----- Predicados Principais ----- %
 
 aplica_R1_triplo(Triplo, N_Triplo) :-
@@ -125,17 +151,10 @@ inicializa(Puz, N_Puz) :-
 verifica_R3(Puz) :-
     compara_sublistas(Puz).
 
-propaga_posicoes(P, Puz, Puz_F) :-
-    (mat_ref(Puz, P, El), var(El), mat_muda_posicao(Puz, P, 0, Puz0), inicializa(Puz0, Puz_F), verifica_R3(Puz_F);
-    mat_ref(Puz, P, El), var(El), mat_muda_posicao(Puz, P, 1, Puz0), inicializa(Puz0, Puz_F), verifica_R3(Puz_F)).
+propaga_posicoes(Posicoes, Puz, N_Puz) :-
+    propaga_posicoes_aux(Posicoes, Puz, N_Puz).
 
-resolve(Puz, Sol) :-
-	propaga_posicoes(_, Puz, N_Puz),
-	(Puz = N_Puz -> Sol = N_Puz;
-	resolve(N_Puz, Sol)).
-
-%[[1,0,_,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,0],[1,0,1,1,0,0],[_,1,_,0,_,1],[0,1,0,1,1,0]]
-%[[0,_,_,1],[0,_,_,1],[1,_,_,_],[1,0,_,_]]
-%[[0,1,0,1],[1,_,_,_],[0,_,_,1],[1,0,_,_]]
-%[[0,1,0,1],[0,1,0,1],[1,_,_,_],[1,0,_,_]]
 %[[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
+%[[1,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,0],[1,0,1,1,0,0],[_,1,_,0,_,1],[0,1,0,1,1,0]]
+% p4 [[_,0,0,_,0,_,0,1],[_,1,1,_,0,_,_,_],[_,_,_,_,_,_,0,_],[0,_,1,1,_,_,_,_],[_,_,_,1,_,_,_,0],[1,_,_,_,_,_,1,_],[_,0,_,_,_,0,_,_],[_,_,1,_,_,0,_,0]]
+% p0 [[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
