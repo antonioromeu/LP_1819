@@ -114,13 +114,10 @@ devolve_coluna_aux([P | _], (_, C), P, C).
 devolve_coluna_aux([_ | R], (L, C), Coluna, Cont) :-
     incr(Cont, N_Cont), devolve_coluna_aux(R, (L, C), Coluna, N_Cont).
 
-propaga_posicoes_aux([(L, C) | _], Puz, N_Puz) :-
-    devolve_linha(Puz, (L, C), Linha, 1), aplica_R1_R2_fila(Linha, N_Linha), mat_muda_linha(Puz, L, N_Linha, N_Puz0),
-    devolve_coluna(N_Puz0, (L, C), Coluna, 1), aplica_R1_R2_fila(Coluna, N_Coluna), mat_muda_coluna(N_Puz0, C, N_Coluna, N_Puz),
-    escreve_Puzzle(N_Puz).
-
-posicoes_relacionadas(Mat, Pos, Lst) :-
-    
+compara_matrizes(Mat1, Mat2) :-
+    flatten(Mat1, Mat1_F), exclude(var, Mat1_F, Mat1_Sem_Var),
+    flatten(Mat2, Mat2_F), exclude(var, Mat2_F, Mat2_Sem_Var),
+    Mat1_Sem_Var == Mat2_Sem_Var.
 
 % ----- Predicados Principais ----- %
 
@@ -151,10 +148,13 @@ inicializa(Puz, N_Puz) :-
 verifica_R3(Puz) :-
     compara_sublistas(Puz).
 
-propaga_posicoes(Posicoes, Puz, N_Puz) :-
-    propaga_posicoes_aux(Posicoes, Puz, N_Puz).
+propaga_posicoes(Pos, Puz, N_Puz) :-
+    devolve_linha(Puz, (L, C), Linha, 1), aplica_R1_R2_fila(Linha, N_Linha), mat_muda_linha(Puz, L, N_Linha, N_Puz0),
+    devolve_coluna(N_Puz0, (L, C), Coluna, 1), aplica_R1_R2_fila(Coluna, N_Coluna), mat_muda_coluna(N_Puz0, C, N_Coluna, N_Puz1),
+    (compara_matrizes(Puz, N_Puz1), N_Puz = N_Puz1;
+    aplica_R1_R2_puzzle(N_Puz1, N_Puz)).
 
-%[[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
-%[[1,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,0],[1,0,1,1,0,0],[_,1,_,0,_,1],[0,1,0,1,1,0]]
-% p4 [[_,0,0,_,0,_,0,1],[_,1,1,_,0,_,_,_],[_,_,_,_,_,_,0,_],[0,_,1,1,_,_,_,_],[_,_,_,1,_,_,_,0],[1,_,_,_,_,_,1,_],[_,0,_,_,_,0,_,_],[_,_,1,_,_,0,_,0]]
 % p0 [[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
+% p1 [[1,_,_,0,_,_],[_,_,0,0,_,1],[_,0,0,_,_,1],[_,_,_,_,_,_],[0,0,_,1,_,_],[_,1,_,_,0,0]]
+% p2 [[1,1,_,_,0,0],[_,1,_,_,0,_],[_,_,0,_,_,_],[0,_,_,_,_,1],[0,0,_,_,1,1],[_,_,1,_,1,_]]
+% p4 [[_,0,0,_,0,_,0,1],[_,1,1,_,0,_,_,_],[_,_,_,_,_,_,0,_],[0,_,1,1,_,_,_,_],[_,_,_,1,_,_,_,0],[1,_,_,_,_,_,1,_],[_,0,_,_,_,0,_,_],[_,_,1,_,_,0,_,0]]
