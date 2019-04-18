@@ -2,6 +2,7 @@
 
 % ----- Bibliotecas ----- %
 
+:- include('codigo_comum').
 :- use_module(library(lists)).
 :- use_module(library(clpfd)).
 
@@ -68,22 +69,11 @@ adiciona_elementos(El, [P | L], N_L, N_L1) :-
     \+number(P), append(N_L, [El], N_L0)),
     adiciona_elementos(El, L, N_L0, N_L1).
 
-escreve_Puzzle(Puz) :-
-    maplist(escreve_Linha, Puz).
-escreve_Linha([]) :- nl, !.
-escreve_Linha([P | R]) :-
-    (var(P) -> write('- ');
-     write(P), write(' ')),
-     escreve_Linha(R).
-
 aplica_R1_R2_linhas([], N_Puz, N_Puz).
 aplica_R1_R2_linhas([P | R], N_Puz, N_PuzAux) :-
     aplica_R1_R2_fila(P, N_L),
     append(N_Puz, [N_L], N_Puz1),
     aplica_R1_R2_linhas(R, N_Puz1, N_PuzAux).
-
-mat_transposta(Mat, Transp) :-
-    transpose(Mat, Transp).
 
 aplica_R1_R2_colunas(L, N_Puz, N_Puz_Final) :-
     mat_transposta(L, L_Transposta),
@@ -135,7 +125,17 @@ inicializa(Puz, N_Puz) :-
 verifica_R3(Puz) :-
     compara_sublistas(Puz).
 
-%[[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
+propaga_posicoes(P, Puz, Puz_F) :-
+    (mat_ref(Puz, P, El), var(El), mat_muda_posicao(Puz, P, 0, Puz0), inicializa(Puz0, Puz_F), verifica_R3(Puz_F);
+    mat_ref(Puz, P, El), var(El), mat_muda_posicao(Puz, P, 1, Puz0), inicializa(Puz0, Puz_F), verifica_R3(Puz_F)).
+
+resolve(Puz, Sol) :-
+	propaga_posicoes(_, Puz, N_Puz),
+	(Puz = N_Puz -> Sol = N_Puz;
+	resolve(N_Puz, Sol)).
+
+%[[1,0,_,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,0],[1,0,1,1,0,0],[_,1,_,0,_,1],[0,1,0,1,1,0]]
 %[[0,_,_,1],[0,_,_,1],[1,_,_,_],[1,0,_,_]]
 %[[0,1,0,1],[1,_,_,_],[0,_,_,1],[1,0,_,_]]
 %[[0,1,0,1],[0,1,0,1],[1,_,_,_],[1,0,_,_]]
+%[[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
