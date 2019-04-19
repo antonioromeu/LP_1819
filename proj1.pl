@@ -119,15 +119,15 @@ compara_matrizes(Mat1, Mat2) :-
     flatten(Mat2, Mat2_F), exclude(var, Mat2_F, Mat2_Sem_Var),
     Mat1_Sem_Var == Mat2_Sem_Var.
 
-compara_colunas(Mat1, Mat2, L, Cont_C) :-
-    compara_colunas_aux(Mat1, Mat2, Cont_C).
+compara_colunas(Mat1, _, mat_dimensoes(Mat1, _, C), C, Lista, Lista).
+compara_colunas(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista1) :-
+    compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista),
+    incr(Cont_C, N_Cont_C),
+    compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, Lista, Lista1).
 
-compara_colunas_aux(Mat1, _, mat_dimensoes(Mat1, _, Num_Cols), Lista, Lista).
 compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista1) :-
     mat_elementos_coluna(Mat1, Cont_C, C1), mat_elementos_coluna(Mat2, Cont_C, C2),
-    compara_linhas(C1, C2, Cont_C, Cont_L, Lista0, Lista1),
-    incr(Cont_C, N_Cont_C),
-    compara_colunas_aux(Mat1, Mat2, N_Cont_C, Cont_L, Lista1, Lista).
+    compara_linhas(C1, C2, Cont_C, Cont_L, Lista0, Lista1).
 
 compara_linhas([], [], _, _, Lista, Lista).
 compara_linhas([P1 | R1], [P2 | R2], Cont_C, Cont_L, Lista0, Lista1) :-
