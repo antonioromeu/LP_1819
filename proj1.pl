@@ -1,13 +1,10 @@
 % ----- Antonio Romeu Paulo Pinheiro, 92427 ----- %
 
-% ----- Bibliotecas ----- %
-
-:- include('codigo_comum').
-:- use_module(library(lists)).
-:- use_module(library(clpfd)).
-
 % ----- Predicados Auxiliares ----- %
 
+% conta_ocur(P, L, N)
+% Conta numero de ocurrencias do numero P em L e guarda esse valor em N,
+% sendo L uma lista composta apenas por numeros
 conta_ocur(_, [], 0).
 conta_ocur(P, [P | R], N) :-
     conta_ocur(P, R, N1),
@@ -15,10 +12,14 @@ conta_ocur(P, [P | R], N) :-
 conta_ocur(P, [_ | R], N) :-
     conta_ocur(P, R, N).
 
+% conta_num(P, L, N)
+% Conta numero de ocurrencias do numero P em L e guarda esse valor em N
 conta_num(P, L, N) :-
     exclude(var, L, L1),
     conta_ocur(P, L1, N).
 
+% conta_variaveis(L, Cont)
+% Conta numero de 
 conta_variaveis(L, Cont) :-
     include(var, L, L_vars),
     length(L_vars, Cont).
@@ -176,10 +177,3 @@ resolve(Puz, Sol) :-
     (primeira_pos_livre(N_Puz, Pos), (mat_muda_posicao(N_Puz, Pos, 0, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1);
                                       mat_muda_posicao(N_Puz, Pos, 1, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1)), resolve(N_Puz1, Sol);
     Sol = N_Puz).
-
-% p0 [[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
-% p1 [[1,_,_,0,_,_],[_,_,0,0,_,1],[_,0,0,_,_,1],[_,_,_,_,_,_],[0,0,_,1,_,_],[_,1,_,_,0,0]]
-% p2 [[1,1,_,_,0,0],[_,1,_,_,0,_],[_,_,0,_,_,_],[0,_,_,_,_,1],[0,0,_,_,1,1],[_,_,1,_,1,_]]
-% p3 [[_,0,_,_,_,_],[0,0,_,_,_,_],[_,_,_,0,_,_],[_,_,_,_,_,1],[1,_,1,1,_,_],[1,_,_,1,_,_]]
-% p4 [[_,0,0,_,0,_,0,1],[_,1,1,_,0,_,_,_],[_,_,_,_,_,_,0,_],[0,_,1,1,_,_,_,_],[_,_,_,1,_,_,_,0],[1,_,_,_,_,_,1,_],[_,0,_,_,_,0,_,_],[_,_,1,_,_,0,_,0]]
-% p5 [[_,_,1,_,0,_,_,1],[1,_,_,_,0,_,_,1],[_,0,_,1,_,_,_,_],[_,_,0,_,0,_,_,_],[1,_,_,_,_,_,1,0],[_,_,_,_,_,_,1,_],[1,0,_,0,_,0,_,_],[0,_,_,1,1,_,_,0]]
