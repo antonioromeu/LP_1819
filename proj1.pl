@@ -1,5 +1,7 @@
 % ----- Antonio Romeu Paulo Pinheiro, 92427 ----- %
 
+:- consult(codigo_comum).
+
 % ----- Predicados Auxiliares ----- %
 
 % conta_ocur(P, L, N)
