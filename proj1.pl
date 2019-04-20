@@ -123,7 +123,7 @@ compara_colunas(Mat1, _, N_C, _, N_C, _, L, L) :- mat_dimensoes(Mat1, _, C), inc
 compara_colunas(Mat1, Mat2, Cont_C, Cont_L, Cont_L_Aux, Lista_Vazia, Lista0, Lista1) :-
     compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista_Vazia, N_Lista), incr(Cont_C, N_Cont_C), incr(Cont_L_Aux, N_Cont_L_Aux),
     (length(N_Lista, Comp), Comp > 0, append(Lista0, N_Lista, Lista2), compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, N_Cont_L_Aux, Lista_Vazia, Lista2, Lista1);
-    compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, N_Cont_L_Aux, Lista_Vazia, Lista0, Lista1)).
+    compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, N_Cont_L_Aux, Lista_Vazia, Lista0, Lista1)), !.
 
 compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista1) :-
     mat_elementos_coluna(Mat1, Cont_C, C1), mat_elementos_coluna(Mat2, Cont_C, C2),
@@ -163,9 +163,13 @@ inicializa(Puz, N_Puz) :-
 verifica_R3(Puz) :-
     compara_sublistas(Puz).
 
-propaga_posicoes([(L, C)], Puz, N_Puz) :-
+propaga_posicoes([], Puz, Puz).
+propaga_posicoes([(L, C) | R], Puz, N_Puz) :-
     devolve_linha(Puz, (L, C), Linha, 1), aplica_R1_R2_fila(Linha, N_Linha), mat_muda_linha(Puz, L, N_Linha, N_Puz0),
-    devolve_coluna(N_Puz0, (L, C), Coluna, 1), aplica_R1_R2_fila(Coluna, N_Coluna), mat_muda_coluna(N_Puz0, C, N_Coluna, N_Puz1).
+    devolve_coluna(N_Puz0, (L, C), Coluna, 1), aplica_R1_R2_fila(Coluna, N_Coluna), mat_muda_coluna(N_Puz0, C, N_Coluna, N_Puz1),
+    compara_colunas(Puz, N_Puz1, 1, 1, 1, [], [], L1),
+    (length(L1, Comp), Comp > 0, append(L1, R, L2), propaga_posicoes(L2, N_Puz1, N_Puz);
+    propaga_posicoes(R, N_Puz1, N_Puz)), !.
 
 % p0 [[_,_,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,_],[_,_,_,_,0,0],[_,1,_,_,_,_],[0,_,0,_,_,_]]
 % p1 [[1,_,_,0,_,_],[_,_,0,0,_,1],[_,0,0,_,_,1],[_,_,_,_,_,_],[0,0,_,1,_,_],[_,1,_,_,0,0]]
@@ -173,3 +177,4 @@ propaga_posicoes([(L, C)], Puz, N_Puz) :-
 % p4 [[_,0,0,_,0,_,0,1],[_,1,1,_,0,_,_,_],[_,_,_,_,_,_,0,_],[0,_,1,1,_,_,_,_],[_,_,_,1,_,_,_,0],[1,_,_,_,_,_,1,_],[_,0,_,_,_,0,_,_],[_,_,1,_,_,0,_,0]]
 % [[0,_,_,1],[0,_,_,1],[1,_,_,_],[1,0,_,_]]
 % [[0,1,0,1],[1,_,_,_],[0,_,_,1],[1,0,_,_]]
+% [[1,0,0,_,_,1],[_,_,_,_,_,1],[_,_,_,_,_,0],[1,0,1,1,0,0],[_,1,_,0,_,1],[0,1,0,1,1,0]]
