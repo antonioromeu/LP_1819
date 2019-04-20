@@ -1,7 +1,7 @@
 % ----- Antonio Romeu Paulo Pinheiro, 92427 ----- %
 
 % ----- Bibliotecas ----- %
-
+:- debug.
 :- include('codigo_comum').
 :- use_module(library(lists)).
 :- use_module(library(clpfd)).
@@ -119,11 +119,11 @@ compara_matrizes(Mat1, Mat2) :-
     flatten(Mat2, Mat2_F), exclude(var, Mat2_F, Mat2_Sem_Var),
     Mat1_Sem_Var == Mat2_Sem_Var.
 
-compara_colunas(Mat1, _, mat_dimensoes(Mat1, _, C), C, Lista, Lista).
-compara_colunas(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista1) :-
-    compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista),
-    incr(Cont_C, N_Cont_C),
-    compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, Lista, Lista1).
+compara_colunas(Mat1, _, N_C, _, N_C, _, L, L) :- mat_dimensoes(Mat1, _, C), incr(C, N_C).
+compara_colunas(Mat1, Mat2, Cont_C, Cont_L, Cont_L_Aux, Lista_Vazia, Lista0, Lista1) :-
+    compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista_Vazia, N_Lista), incr(Cont_C, N_Cont_C), incr(Cont_L_Aux, N_Cont_L_Aux),
+    (length(N_Lista, Comp), Comp > 0, append(Lista0, N_Lista, Lista2), compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, N_Cont_L_Aux, Lista_Vazia, Lista2, Lista1);
+    compara_colunas(Mat1, Mat2, N_Cont_C, Cont_L, N_Cont_L_Aux, Lista_Vazia, Lista0, Lista1)).
 
 compara_colunas_aux(Mat1, Mat2, Cont_C, Cont_L, Lista0, Lista1) :-
     mat_elementos_coluna(Mat1, Cont_C, C1), mat_elementos_coluna(Mat2, Cont_C, C2),
