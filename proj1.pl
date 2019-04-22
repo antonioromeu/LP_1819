@@ -26,6 +26,16 @@ conta_variaveis(L, Cont) :-
     include(var, L, L_vars),
     length(L_vars, Cont).
 
+conta_variaveis_matrix(Mat, Cont1) :-
+    Cont = 0,
+    conta_variaveis_matrix_aux(Mat, Cont, Cont1).
+
+conta_variaveis_matrix_aux([], C, C).
+conta_variaveis_matrix_aux([P | R], Cont0, Cont) :-
+    conta_variaveis(P, N),
+    Cont1 is N + Cont0,
+    conta_variaveis_matrix_aux(R, Cont1, Cont).
+
 incr(X, X1) :-
     X1 is X+1.
 
@@ -137,6 +147,11 @@ compara_linhas([P1 | R1], [P2 | R2], Cont_C, Cont_L, Lista0, Lista1) :-
     (var(P1), \+var(P2), append(Lista0, [(Cont_L, Cont_C)], Lista), incr(Cont_L, N_Cont_L), compara_linhas(R1, R2, Cont_C, N_Cont_L, Lista, Lista1);
     incr(Cont_L, N_Cont_L), compara_linhas(R1, R2, Cont_C, N_Cont_L, Lista0, Lista1)).
 
+resolve_aux(Puz, Sol) :-
+    (primeira_pos_livre(Puz, Pos), (mat_muda_posicao(Puz, Pos, 0, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1);
+                                      mat_muda_posicao(Puz, Pos, 1, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1)), resolve_aux(N_Puz1, Sol);
+    Sol = Puz).
+
 % ----- Predicados Principais ----- %
 
 aplica_R1_triplo(Triplo, N_Triplo) :-
@@ -161,7 +176,11 @@ aplica_R1_R2_puzzle(Puz, N_Puz) :-
     aplica_R1_R2_linhas(Puz, [], N_Puz0) -> aplica_R1_R2_colunas(N_Puz0, [], N_Puz); false.
 
 inicializa(Puz, N_Puz) :-
-    resolve_inicializa(Puz, N_Puz0) -> resolve_inicializa(N_Puz0, N_Puz); false.
+    conta_variaveis_matrix(Puz, N1),
+    resolve_inicializa(Puz, N_Puz0),
+    conta_variaveis_matrix(N_Puz0, N2),
+    (N1 =\= N2, inicializa(N_Puz0, N_Puz);
+    N_Puz = N_Puz0).
 
 verifica_R3(Puz) :-
     compara_sublistas(Puz).
@@ -175,7 +194,6 @@ propaga_posicoes([(L, C) | R], Puz, N_Puz) :-
     propaga_posicoes(R, N_Puz1, N_Puz)), !.
 
 resolve(Puz, Sol) :-
-    inicializa(Puz, N_Puz), verifica_R3(N_Puz),
-    (primeira_pos_livre(N_Puz, Pos), (mat_muda_posicao(N_Puz, Pos, 0, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1);
-                                      mat_muda_posicao(N_Puz, Pos, 1, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1)), resolve(N_Puz1, Sol);
+    inicializa(Puz, N_Puz), verifica_R3(N_Puz), 
+    (primeira_pos_livre(N_Puz, _), resolve_aux(N_Puz, Sol);
     Sol = N_Puz).
