@@ -148,9 +148,16 @@ compara_linhas([P1 | R1], [P2 | R2], Cont_C, Cont_L, Lista0, Lista1) :-
     incr(Cont_L, N_Cont_L), compara_linhas(R1, R2, Cont_C, N_Cont_L, Lista0, Lista1)).
 
 resolve_aux(Puz, Sol) :-
-    (primeira_pos_livre(Puz, Pos), (mat_muda_posicao(Puz, Pos, 0, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1);
-                                      mat_muda_posicao(Puz, Pos, 1, N_Puz0), propaga_posicoes([Pos], N_Puz0, N_Puz1), verifica_R3(N_Puz1)), resolve_aux(N_Puz1, Sol);
-    Sol = Puz).
+    \+primeira_pos_livre(Puz, _), Sol = Puz.
+
+resolve_aux(Puz, Sol) :-
+    primeira_pos_livre(Puz, Pos), (mat_muda_posicao(Puz, Pos, 0, N_Puz0),
+                                    propaga_posicoes([Pos], N_Puz0, N_Puz1),
+                                    verifica_R3(N_Puz1);
+                                    mat_muda_posicao(Puz, Pos, 1, N_Puz0),
+                                    propaga_posicoes([Pos], N_Puz0, N_Puz1),
+                                    verifica_R3(N_Puz1)),
+    resolve_aux(N_Puz1, Sol).
 
 % ----- Predicados Principais ----- %
 
