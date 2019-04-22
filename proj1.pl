@@ -4,48 +4,50 @@
 
 % ----- Predicados Auxiliares ----- %
 
-% conta_ocur(P, L, N)
-% Conta numero de ocurrencias do numero P em L e guarda esse valor em N,
-% sendo L uma lista composta apenas por numeros
-conta_ocur(_, [], 0).
-conta_ocur(P, [P | R], N) :-
-    conta_ocur(P, R, N1),
-    !, N is N1 + 1.
-conta_ocur(P, [_ | R], N) :-
-    conta_ocur(P, R, N).
-
 % conta_num(P, L, N)
-% Conta numero de ocurrencias do numero P em L e guarda esse valor em N
+% N e o numero de ocorrencias
+% do numero P na lista L
 conta_num(P, L, N) :-
     exclude(var, L, L1),
-    conta_ocur(P, L1, N).
+    conta_num_aux(P, L1, N).
 
-% conta_variaveis(L, Cont)
-% Conta numero de 
-conta_variaveis(L, Cont) :-
+conta_num_aux(_, [], 0).
+conta_num_aux(P, [P | R], N) :-
+    conta_num_aux(P, R, N1),
+    !, N is N1 + 1.
+conta_num_aux(P, [_ | R], N) :-
+    conta_num_aux(P, R, N).
+
+% conta_variaveis(L, N)
+% N e o numero de variaveis da lista L
+conta_variaveis(L, N) :-
     include(var, L, L_vars),
-    length(L_vars, Cont).
+    length(L_vars, N).
 
-conta_variaveis_matrix(Mat, Cont1) :-
-    Cont = 0,
-    conta_variaveis_matrix_aux(Mat, Cont, Cont1).
+% conta_variaveis_matrix(Mat, N)
+% N e o numero de variaveis presentes na matriz Mat
+conta_variaveis_matrix(Mat, N) :-
+    N_Aux = 0,
+    conta_variaveis_matrix_aux(Mat, N_Aux, N).
 
 conta_variaveis_matrix_aux([], C, C).
-conta_variaveis_matrix_aux([P | R], Cont0, Cont) :-
+conta_variaveis_matrix_aux([P | R], N0, N) :-
     conta_variaveis(P, N),
-    Cont1 is N + Cont0,
-    conta_variaveis_matrix_aux(R, Cont1, Cont).
+    N_Aux is N + N0,
+    conta_variaveis_matrix_aux(R, N_Aux, N).
 
+% incr(X, X1)
+% X1 e o resultado de incrementar X
 incr(X, X1) :-
-    X1 is X+1.
+    X1 is X + 1.
 
 preenche_triplo([X, Y, Z], Res) :-
     conta_variaveis([X, Y, Z], Num_Vars),
-    (Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0;
-                    conta_ocur(0, [X, Y, Z], N), N =\= 3, N > 0),
+    (Num_Vars == 0, (conta_num_aux(1, [X, Y, Z], N), N =\= 3, N > 0;
+                    conta_num_aux(0, [X, Y, Z], N), N =\= 3, N > 0),
                     Res = [X, Y, Z];
-    Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N == 3, false;
-                    conta_ocur(0, [X, Y, Z], N), N == 3, false);
+    Num_Vars == 0, (conta_num_aux(1, [X, Y, Z], N), N == 3, false;
+                    conta_num_aux(0, [X, Y, Z], N), N == 3, false);
     Num_Vars == 1, preenche_1([X, Y, Z], Res);
     Num_Vars == 2, Res = [X, Y, Z];
     Num_Vars == 3, Res = [X, Y, Z]).
