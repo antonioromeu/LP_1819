@@ -39,7 +39,7 @@ conta_variaveis_matrix_aux([P | R], Cont0, Cont) :-
 % incr(X, X1)
 % X1 e o resultado de incrementar X
 incr(X, X1) :-
-    X1 is X+1.
+    X1 is X + 1.
 
 preenche_triplo([X, Y, Z], Res) :-
     conta_variaveis([X, Y, Z], Num_Vars),
