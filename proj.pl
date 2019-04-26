@@ -41,6 +41,9 @@ conta_variaveis_matrix_aux([P | R], Cont0, Cont) :-
 incr(X, X1) :-
     X1 is X + 1.
 
+% preenche_triplo(L, R)
+% R e o resultado de prencher com 0s e/ou 1s
+% a lista L, composta por 3 elementos
 preenche_triplo([X, Y, Z], Res) :-
     conta_variaveis([X, Y, Z], Num_Vars),
     (Num_Vars == 0, (conta_ocur(1, [X, Y, Z], N), N =\= 3, N > 0;
@@ -52,6 +55,9 @@ preenche_triplo([X, Y, Z], Res) :-
     Num_Vars == 2, Res = [X, Y, Z];
     Num_Vars == 3, Res = [X, Y, Z]).
 
+% preenche_1(L, R)
+% R e o resultado de preencher uma variavel
+% numa lista L, composta por 3 elementos
 preenche_1([X, Y, Z], Res) :-
     (var(X), NX is 2 - Z - Y, (NX == 2, Res = [1, Y, Z];
                                 NX == 1, Res = [X, Y, Z];
@@ -63,6 +69,8 @@ preenche_1([X, Y, Z], Res) :-
                                 NZ == 1, Res = [X, Y, Z];
                                 NZ == 0, Res = [X, Y, NZ])).
 
+% preenche_lista(L, R)
+% R e o resultado de preencher L
 preenche_lista(L, Res) :-
     preenche_lista_aux(L, Res_Temp),
     (L == Res_Temp, Res = Res_Temp;
@@ -75,29 +83,46 @@ preenche_lista_aux([X, Y, Z | R], Res) :-
     preenche_lista_aux([NY, NZ | R], Res_Temp),
     Res = [NX | Res_Temp].
 
+% verifica_se_quantidade_ultrapassa(Fila, D)
+% retorna false caso o numero de ocurrencias de D
+% na lista L seja maior que metade do comprimento de L
 verifica_se_quantidade_ultrapassa(Fila, D) :-
     conta_num(D, Fila, N), length(Fila, C), Comp is C / 2, N =< Comp.
 
+% verifica_se_sao_metade(Fila, D)
+% retorna false caso o numero de ocurrencias de D
+% na lista L nao seja metade do comprimento de L
 verifica_se_sao_metade(Fila, D) :-
     conta_num(D, Fila, N), length(Fila, C), Comp is C / 2, N == Comp.
 
+% adiciona_elementos(El, L, N_L, N_L_Aux)
+% N_L e o resultado de adicionar El a uma lista L
 adiciona_elementos(_, [], L, L).
 adiciona_elementos(El, [P | L], N_L, N_L1) :-
     (number(P), append(N_L, [P], N_L0);
     \+number(P), append(N_L, [El], N_L0)),
     adiciona_elementos(El, L, N_L0, N_L1).
 
+% aplica_R1_R2_linhas(Puz, N_Puz, N_PuzAux)
+% N_Puz e o resultado de aplicar as regras 1 e 2
+% ao Puz, N_PuzAux serve como auxiliar
 aplica_R1_R2_linhas([], N_Puz, N_Puz).
 aplica_R1_R2_linhas([P | R], N_Puz, N_PuzAux) :-
     aplica_R1_R2_fila(P, N_L),
     append(N_Puz, [N_L], N_Puz1),
     aplica_R1_R2_linhas(R, N_Puz1, N_PuzAux).
 
+% aplica_R1_R2_colunas(L, N_Puz, N_PuzFinal)
+% N_PuzFinal e o resultado de aplicar as regras 1
+% e 2 as colunas da matriz L
 aplica_R1_R2_colunas(L, N_Puz, N_Puz_Final) :-
     mat_transposta(L, L_Transposta),
     aplica_R1_R2_linhas(L_Transposta, N_Puz, N_PuzAux),
     mat_transposta(N_PuzAux, N_Puz_Final).
 
+% resolve_inicializa(Puz, Novo)
+% Novo e o resultado de aplicar_R1_R2_puzzle
+% a Puz ate nao existirem posicoes alteradas
 resolve_inicializa(Puz, Novo) :-
 	aplica_R1_R2_puzzle(Puz, N_Puz),
 	(Puz = N_Puz -> Novo = N_Puz;
