@@ -8,8 +8,4 @@ A program for solving a binary puzzles.
 
 ## Acknowledgments
 
-Some skeleton code was given by the teachers.  
-
-## Evaluation
-
-19.3
+Some skeleton code was given by the teachers.
